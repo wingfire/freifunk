@@ -1,0 +1,97 @@
+#Die Standartroute auslesen
+WANIP=$(route -n | grep UG | grep 0.0.0.0 | tr -s " "| cut -d" " -f2 | head -n 1)
+#Und den 1. Block
+IP1=$(echo $WANIP | cut -d "." -f1)
+#und den 2. auslesen
+IP2=$(echo $WANIP | cut -d "." -f2)
+INTERNET=false
+#Wenn Standardroute des Routers aus dem Freifunknetz kommt, INTERNET=false, ansonsten eben true....
+if [ "$IP1" != "172" ] && [ "$IP2" != "16" ] ; then
+        INTERNET=true;
+fi
+
+#Falls eigener Internetanschluss vorhanden.....
+if [ "$INTERNET" = true ]
+	then
+		#Ist der VPN-Server auf dem internen IFace erreichbar? (=VPN steht)
+	        ping -c 1 10.26.0.1
+                if test $? = 0
+			then
+				#Falls Verbindung stehtschauen, ob OLSR schon korrekt fuer TAP0 konfiguriert ist....
+				VPN=$(cat /var/etc/olsrd.conf  | grep tap0)
+        			if [ "$VPN" ]
+         	       			then
+                       				echo "OLSR korrekt konfiguriert. Keine Aktion."
+               	  			else
+                                                #falls nicht entsprechend die Config erweitern
+                                                echo "Interface \"tap0\"" >> /var/etc/olsrd.conf
+                                                echo "{" >> /var/etc/olsrd.conf
+                                                echo "HelloInterval           50.0" >> /var/etc/olsrd.conf
+                                                echo "HelloValidityTime       150.0" >> /var/etc/olsrd.conf
+                                                echo "TcInterval              30.0" >> /var/etc/olsrd.conf
+                                                echo "TcValidityTime          90.0" >> /var/etc/olsrd.conf
+                                                echo "MidInterval             150.0" >> /var/etc/olsrd.conf
+                                                echo "MidValidityTime         450.0" >> /var/etc/olsrd.conf
+                                                echo "HnaInterval             150.0" >> /var/etc/olsrd.conf
+                                                echo "HnaValidityTime         450.0" >> /var/etc/olsrd.conf
+                                                #echo "Ip4Broadcast           255.255.255.255" >> /var/etc/olsrd.conf
+                                                #echo "LinkQualityMult        10.26.0.1 0.5" >> /var/etc/olsrd.conf
+                                                echo "Weight                  30" >> /var/etc/olsrd.conf
+                                                echo "}" >> /var/etc/olsrd.conf
+						sleep 10
+						#und OLSR neustarten mit neuer Config
+	       				        killall olsrd
+                			 	sleep 5
+          				        /usr/sbin/olsrd -f /var/etc/olsrd.conf -nofork &
+
+		                                #Internes IP-Interface auslesen & Subnetzmaske
+        		                        IP=$(ifconfig br-lan |grep Bcast |cut -d: -f2 |cut -d" " -f1)/$(ifconfig br-lan |grep Bcast |cut -d: -f4 |cut -d" " -f1)
+                		                #Wenn die interne=der WANIP ist(z.B. Fonera 2100 hat nur 1 Ethernetbuchse fuer WAN ODER LAN)
+                        		        if [ "$IP" != "$WANIP" ]; then
+                        		                iptables -t nat -I POSTROUTING -s $IP -j MASQUERADE
+                               			fi
+
+		                                #Jetzt wird das ganze noch fuers WLAN gemacht:
+        		                        #Falls WL0 existiert(Broadcom), entsprechend DHCP-Wlan auslesen
+               		                	IP=$(ifconfig wl0:1 |grep Bcast |cut -d: -f2 |cut -d" " -f1)
+                                		if [ "$IP" ]
+                                       			then
+                                       			#Wenn wl0:1 existiert hat, das Interface inclusive Subnetzmaske auslesen
+                                        	      	IP=$(ifconfig wl0:1 |grep Bcast |cut -d: -f2 |cut -d" " -f1)/$(ifconfig wl0:1 |grep Bcast | cut -d: -f4 |cut -d" " -f1)
+                                       		#ansonsten eben das ATH-Interface (Atheros)
+                                       		else
+                                              		IP=$(ifconfig ath0:1 |grep Bcast |cut -d: -f2 |cut -d" " -f1)/$(ifconfig ath0:1 |grep Bcast | cut -d: -f4 |cut -d" " -f1)
+                                       		fi
+    	                            		iptables -t nat -I POSTROUTING -s $IP -j MASQUERADE
+					fi
+			fi
+			#Falls im Logfile folgende Meldungen auftauchen:
+			logread | tail -n1 | grep "OLSR: sendto IPv4 No such device"
+			if test $? = 0
+       				then
+			        	killall olsrd
+               				sleep 5
+       				      	/usr/sbin/olsrd -f /var/etc/olsrd.conf -nofork &
+
+       		                         #Internes IP-Interface auslesen & Subnetzmaske
+                	                IP=$(ifconfig br-lan |grep Bcast |cut -d: -f2 |cut -d" " -f1)/$(ifconfig br-lan |grep Bcast |cut -d: -f4 |cut -d" " -f1)
+                	                #Wenn die interne=der WANIP ist(z.B. Fonera 2100 hat nur 1 Ethernetbuchse fuer WAN ODER LAN)
+                	                if [ "$IP" != "$WANIP" ]; then
+                	                        iptables -t nat -I POSTROUTING -s $IP -j MASQUERADE
+                	                fi
+
+                        	        #Jetzt wird das ganze noch fuers WLAN gemacht:
+                               	 	#Falls WL0 existiert(Broadcom), entsprechend DHCP-Wlan auslesen
+                               	 	IP=$(ifconfig wl0:1 |grep Bcast |cut -d: -f2 |cut -d" " -f1)
+                                	if [ "$IP" ]
+                                       		then
+                                       			#Wenn wl0:1 existiert hat, das Interface inclusive Subnetzmaske auslesen
+                                         		IP=$(ifconfig wl0:1 |grep Bcast |cut -d: -f2 |cut -d" " -f1)/$(ifconfig wl0:1 |grep Bcast | cut -d: -f4 |cut -d" " -f1)
+                                       		#ansonsten eben das ATH-Interface (Atheros)
+                                       		else
+                                              		IP=$(ifconfig ath0:1 |grep Bcast |cut -d: -f2 |cut -d" " -f1)/$(ifconfig ath0:1 |grep Bcast | cut -d: -f4 |cut -d" " -f1)
+                                      	 	fi
+                                	iptables -t nat -I POSTROUTING -s $IP -j MASQUERADE
+				fi
+	fi
+exit 0

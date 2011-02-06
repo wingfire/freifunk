@@ -1,0 +1,91 @@
+config 'public' 'contact'
+	option 'nickname' 'Namen bitte noch anpassen'
+	option 'name' 'Namen bitte noch anpassen'
+	option 'mail' ''
+	option 'phone' ''
+	option 'location' 'Adresse bitte noch anpassen'
+	option 'note' ''
+
+config 'public' 'community'
+	option 'name' 'Freifunk Bonn'
+	option 'homepage' 'http://bonn.freifunk.net'
+	option 'prefix' '172.16'
+	option 'external' 'freifunk_bonn'
+	option 'ssid' 'bonn.freifunk.net'
+        option 'splash_network' '172.18.0.0/16'
+        option 'mesh_network' '172.16.0.0/16'
+        option 'splash_prefix' '27'
+
+config 'fw_rule' 'icmp'
+	option 'src' 'freifunk'
+	option 'target' 'ACCEPT'
+	option 'proto' 'icmp'
+
+config 'fw_rule' 'http'
+	option 'src' 'freifunk'
+	option 'target' 'ACCEPT'
+	option 'proto' 'tcp'
+	option 'dest_port' '80'
+
+config 'fw_rule' 'https'
+	option 'src' 'freifunk'
+	option 'target' 'ACCEPT'
+	option 'proto' 'tcp'
+	option 'dest_port' '443'
+
+config 'fw_rule' 'ssh'
+	option 'src' 'freifunk'
+	option 'target' 'ACCEPT'
+	option 'proto' 'tcp'
+	option 'dest_port' '22'
+
+config 'fw_rule' 'olsr'
+	option 'src' 'freifunk'
+	option 'target' 'ACCEPT'
+	option 'proto' 'udp'
+	option 'dest_port' '698'
+
+config 'fw_forwarding' 'lan'
+	option 'src' 'lan'
+	option 'dest' 'freifunk'
+
+config 'fw_forwarding' 'fffwd'
+	option 'src' 'freifunk'
+	option 'dest' 'freifunk'
+
+config 'defaults' 'wifi_device'
+	option 'channel' '7'
+	option 'diversity' '1'
+	option 'disabled' '0'
+	option 'txpower' '15'
+
+config 'defaults' 'wifi_iface'
+	option 'mode' 'adhoc'
+	option 'bssid' '02:CA:FF:EE:BA:BE'
+	option 'sw_merge' '1'
+
+config 'defaults' 'interface'
+	option 'netmask' '255.255.0.0'
+	option 'dns' '88.198.178.18 141.54.1.1 212.204.49.83 208.67.220.220 208.67.222.222'
+
+config 'defaults' 'alias'
+	option 'netmask' '255.255.255.0'
+
+config 'defaults' 'dhcp'
+	option 'leasetime' '30m'
+
+config 'defaults' 'olsr_interface'
+	option 'Ip4Broadcast' '255.255.255.255'
+
+config 'defaults' 'time'
+	option 'rdate_servers' '128.138.140.44 171.64.7.77 171.64.7.99 81.169.154.44 130.133.1.10'
+
+config 'community' 'bonn'
+        option 'name' 'Freifunk Bonn'
+        option 'homepage' 'http://bonn.freifunk.net'
+        option 'ssid' 'bonn.freifunk.net'
+        option 'external' 'freifunk_bonn'
+        option 'mesh_network' '172.16.0.0/16'
+        option 'splash_network' '172.18.0.0/16'
+        option 'splash_prefix' '27'
+

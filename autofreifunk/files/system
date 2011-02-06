@@ -1,0 +1,4 @@
+config 'system'
+	option 'hostname' 'Namen bitte noch anpassen'
+	option 'zonename' 'Europe/Berlin'
+	option 'timezone' 'CET-1CEST,M3.5.0,M10.5.0/3'
