@@ -32,6 +32,13 @@ define Build/Configure
 endef
 
 define Package/ff-koeln-bonn/install
+	$(INSTALL_DIR) $(1)/etc/openvpn
+	$(INSTALL_DATA) ./files/openvpn/ca.crt $(1)/etc/openvpn
+        $(INSTALL_DATA) ./files/openvpn/client.conf $(1)/etc/openvpn
+        $(INSTALL_DATA) ./files/openvpn/contest $(1)/etc/openvpn
+        $(INSTALL_DATA) ./files/openvpn/freifunkknoten.crt $(1)/etc/openvpn
+        $(INSTALL_DATA) ./files/openvpn/freifunkknoten.key $(1)/etc/openvpn
+	$(INSTALL_DATA) ./files/luci $(1)/etc/config/openvpn
 endef
 
 $(eval $(call BuildPackage,ff-koeln-bonn))
