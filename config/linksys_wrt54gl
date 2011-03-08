@@ -1,0 +1,76 @@
+#!/bin/sh
+
+# executalbe
+BATCTL=/usr/sbin/batctl
+OPKG=/bin/opkg
+UCI=/sbin/uci	
+
+# check web access
+
+# update opkg
+OPKG update
+
+# install batman
+OPKG install kmod-batman-adv
+
+# no idea what i'm doing here
+# stolen from http://pizza.hskflashcards.com/index.php?page=B.A.T.M.A.N.+Advanced+on+OpenWrt+How-To
+# and http://www.mail-archive.com/b.a.t.m.a.n@lists.open-mesh.org/msg03154.html
+
+UCI delete wireless.wifi0.disabled
+UCI delete wireless.@wifi-iface[0].network
+UCI set wireless.wifi0.channel=1
+UCI set wireless.@wifi-iface[0].mode=ahdemo
+UCI set wireless.@wifi-iface[0].ssid=mesh
+# needed?
+# UCI set wireless.@wifi-iface[0].bssid=02:12:34:56:78:9A
+
+UCI set network.lan.mtu=1500
+UCI set network.lan.ifname="eth0 bat0"
+UCI set network.wlan0=interface
+UCI set network.wlan0.ifname=wlan0
+UCI set network.wlan0.proto=none
+UCI set network.wlan0.mtu=1527
+# oder 1524?
+UCI set network.bat0=interface
+UCI set network.bat0.ifname=bat0
+UCI set network.bat0.proto=none
+UCI set network.bat0.mtu=1500
+
+
+
+# comment in the next line to make changes reboot proof
+# uci commit
+
+/etc/init.d/network restart
+
+# add wlan to batman
+# echo ath0 > /proc/net/batman-adv/interfaces
+BATCTL if add wlan0
+
+# hier brauche ich immer noch ifdown wlan0 && ifup wlan0
+
+# install ipv6
+OPKG install kmod-ipv6
+
+#setup wan
+
+#setup lan
+
+# setup bat
+
+# setup vpn
+
+#setup wlan mesh
+
+#setup wlan struct
+
+# dhcp lan
+
+# dhcp wan
+
+# batman wlan mesh
+
+# batman lan
+
+# batman vpn
