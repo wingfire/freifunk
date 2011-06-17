@@ -1,0 +1,8 @@
+# mit webinterface flashen
+# mit telnet einloggen und passwort ändern
+# mit ssh und user root einloggen
+
+opkg update
+
+opkg install kmod-batman-adv
+
