@@ -1,5 +1,5 @@
 #!/bin/sh
-
+# FW:/backfire/10.03.1-rc4/brcm47xx/
 # executalbe
 BATCTL=/usr/sbin/batctl
 OPKG=/bin/opkg
