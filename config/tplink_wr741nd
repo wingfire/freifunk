@@ -1,8 +1,13 @@
-# mit webinterface flashen
-# mit telnet einloggen und passwort �ndern
+﻿# mit webinterface flashen
+# mit telnet einloggen und passwort ändern
 # mit ssh und user root einloggen
 
 opkg update
 
 opkg install kmod-batman-adv
+
+# versuch wegen zu wenig platz auf dem device abgebrochen
+# werden wohl auf ein selbstgebautes image umschwenken
+
+
 
