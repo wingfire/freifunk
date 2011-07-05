@@ -3,6 +3,15 @@
 
 # setup /etc/config/wireless
 # sample in github.com/wingfire/${router_name}/etc/config/wireless
+# wifi-device
+# channel 1
+# disabled 0
+#
+# wifi-iface
+# network wlan0
+# mode adhoc
+# ssid mesh
+# bssid 02:ca:ff:ee:ba:be
 /etc/init.d/network restart
 
 # connect wlan0 to batman
