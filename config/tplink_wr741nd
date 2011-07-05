@@ -1,13 +1,30 @@
-﻿# mit webinterface flashen
-# mit telnet einloggen und passwort ändern
-# mit ssh und user root einloggen
+# flash router with firmware form this url
+# http://alpha2.seips.net/openwrt-images/ar71xx/
 
-opkg update
+# setup /etc/config/wireless
+# sample in github.com/wingfire/${router_name}/etc/config/wireless
+/etc/init.d/network restart
 
-opkg install kmod-batman-adv
+# connect wlan0 to batman
+batctl if add wlan0
 
-# versuch wegen zu wenig platz auf dem device abgebrochen
-# werden wohl auf ein selbstgebautes image umschwenken
+# check for mash neigbours
+batctl o
 
+# setup bat
 
+# setup vpn
 
+#setup wlan mesh
+
+#setup wlan struct
+
+# dhcp lan
+
+# dhcp wan
+
+# batman wlan mesh
+
+# batman lan
+
+# batman vpn
