@@ -20,6 +20,9 @@ batctl if add wlan0
 # check for mash neigbours
 batctl o
 
+# enable ipv6 link local on bat0
+ifconfig bat0 up
+
 # setup bat
 
 # setup vpn
